@@ -57,11 +57,19 @@ game.set_render_particles(False)
 game.set_render_effects_sprites(False)  # Smoke and blood
 game.set_render_messages(False)  # In-game messages
 game.set_render_corpses(False)
-game.set_render_screen_flashes(True)  # Effect upon taking damage or picking up items
+#game.set_render_screen_flashes(False)  # Effect upon taking damage or picking up items
+
 
 # Adds buttons that will be allowed. 
 game.add_available_button(Button.MOVE_LEFT)
 game.add_available_button(Button.MOVE_RIGHT)
+game.add_available_button(Button.MOVE_FORWARD)
+game.add_available_button(Button.MOVE_BACKWARD)
+game.add_available_button(Button.TURN_RIGHT)
+game.add_available_button(Button.TURN_LEFT)
+
+
+
 game.add_available_button(Button.ATTACK)
 
 # Adds game variables that will be included in state.
@@ -94,7 +102,7 @@ game.init()
 # Define some actions. Each list entry corresponds to declared buttons:
 # MOVE_LEFT, MOVE_RIGHT, ATTACK
 # 5 more combinations are naturally possible but only 3 are included for transparency when watching.
-actions = [[True, False, False], [False, True, False], [False, False, True]]
+actions = [[True, False, False, False, False, False, False], [False, True, False, False, False, False, False], [False, False, True, False, False, False, False], [False, False, False, True, False, False, False], [False, False, False, False, True, False, False], [False, False, False, False, False, True, False], [False, False, False, False, False, False, True]]
 
 # Run this many episodes
 episodes = 10
