@@ -16,6 +16,8 @@ from scipy.misc import imresize
 from gym.core import ObservationWrapper
 from gym.spaces.box import Box
 
+
+
 class PreprocessImage(ObservationWrapper):
     def __init__(self, env, height=64, width=64, grayscale=True,
                  crop=lambda img: img):
@@ -48,8 +50,8 @@ def make_env():
     return e
 env = make_env()
 
-NOOP, SHOOT, RIGHT, LEFT = 0, 1, 2, 3
-VALID_ACTIONS = [0, 1, 2, 3]
+SHOOT, RIGHT, LEFT = 0, 1, 2
+VALID_ACTIONS = [0, 1, 2 ]
 
 
 class Estimator():
@@ -153,7 +155,7 @@ def deep_q_learning(sess,
         state = np.stack([state] * 4, axis=2)
         loss = None
         total_reward = 0
-        actions_tracker = [0, 1, 2, 3]
+        actions_tracker = [0, 1, 2]
 
         for t in itertools.count():
 
@@ -167,18 +169,34 @@ def deep_q_learning(sess,
             action_probs = policy(sess, state, epsilon)
             action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
             actions_tracker.append(action)
+
+
             next_state, reward, done, _ = env.step(VALID_ACTIONS[action])
             next_state = np.append(state[:,:,1:], np.expand_dims(next_state, 2), axis=2)
 
             if len(replay_memory) == replay_memory_size:
                 replay_memory.pop(0)
 
-            replay_memory.append(Transition(state, action, reward, next_state, done))   
+            replay_memory.append(Transition(state, action, reward, next_state, done))  
+            
+            '''print("state")
+            print(state)
+            print("action")
+            print(action)
+            print("reward")
+            print(reward)
+            print("next state")
+            print(next_state)
+            print("done")
+            print(done)''' 
+
             total_reward += reward
 
             if total_t > replay_memory_init_size:
                 samples = random.sample(replay_memory, batch_size)
                 states_batch, action_batch, reward_batch, next_states_batch, done_batch = map(np.array, zip(*samples))
+
+           
 
                 q_values_next = q_estimator.predict(sess, next_states_batch)
                 best_actions = np.argmax(q_values_next, axis=1)
@@ -193,12 +211,22 @@ def deep_q_learning(sess,
             total_t += 1
 
             if done:
+                
+                    
                 print("Step {} ({}) @ Episode {}/{}, loss: {}".format(
                     t, total_t, i_episode + 1, num_episodes, loss), end=", ")
                 print('reward %f, steps %d, eps %f' % (total_reward, t, epsilon), end=", ")
                 counts_action = np.bincount(actions_tracker) - 1
-                print('noop %d, shoot %d, right %d, left %d' % \
-                    (counts_action[0], counts_action[1], counts_action[2], counts_action[3]))
+
+                print('shoot %d, right %d, left %d' % \
+                    (counts_action[0], counts_action[1], counts_action[2]))
+                    
+                if total_reward >= 10:
+                    counter1 +=1
+                if total_reward < 10:
+                    counter1 = 0
+                if counter1 > 100:
+                    print("Hooray Dennis!")
                 break
 
 tf.reset_default_graph()
@@ -210,6 +238,11 @@ target_estimator = Estimator(scope="target_q")
 
 saver = tf.train.Saver()
 
+global counter1
+global counter2
+counter1 = 0
+counter2 = 0
+
 if not os.path.exists('docs'):
     os.makedirs('docs')
 
@@ -220,4 +253,4 @@ with tf.Session() as sess:
                     q_estimator=q_estimator,
                     target_estimator=target_estimator,
                     saver=saver,
-                    num_episodes=1000)
+                    num_episodes=1)
