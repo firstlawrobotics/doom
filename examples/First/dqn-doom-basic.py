@@ -220,7 +220,7 @@ def deep_q_learning(sess,
 
                 print('shoot %d, right %d, left %d' % \
                     (counts_action[0], counts_action[1], counts_action[2]))
-                    
+                global counter1    
                 if total_reward >= 10:
                     counter1 +=1
                 if total_reward < 10:
@@ -229,7 +229,11 @@ def deep_q_learning(sess,
                     print("Hooray Dennis!")
                 break
 
+global counter1
+counter1 = 0
+
 tf.reset_default_graph()
+
 
 global_step = tf.Variable(0, name='global_step', trainable=False)
     
@@ -237,11 +241,6 @@ q_estimator = Estimator(scope="q")
 target_estimator = Estimator(scope="target_q")
 
 saver = tf.train.Saver()
-
-global counter1
-global counter2
-counter1 = 0
-counter2 = 0
 
 if not os.path.exists('docs'):
     os.makedirs('docs')
@@ -253,4 +252,4 @@ with tf.Session() as sess:
                     q_estimator=q_estimator,
                     target_estimator=target_estimator,
                     saver=saver,
-                    num_episodes=1)
+                    num_episodes=1000)
