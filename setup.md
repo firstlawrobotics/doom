@@ -12,5 +12,6 @@ https://github.com/fluxcapacitor/pipeline/wiki/GCP-GPU-Tensorflow-Docker
 8. You don't have a monitor so there are some funkinesses to handle. So run "xvfb-run -s "-screen 0 1400x900x24" bash"
 9. You will probably also run into some funkiness with loading everything. Before game.init() add game.add_game_args("+vid_forcesurface 1").
 
+11. Install CUDNN https://medium.com/@ikekramer/installing-cuda-8-0-and-cudnn-5-1-on-ubuntu-16-04-6b9f284f6e77
 
 Random shouts to the ZDoom community, the ViZDoom community, mwydmuch, and ppaquette for making some great stuff.
